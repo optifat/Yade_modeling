@@ -1,10 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
 from yade import pack, ymport, export, geom, bodiesHandling, qt
 import math
-import os
 
 class Material:
     def __init__(self, young, poisson, frictionAngle, density):
@@ -86,9 +84,6 @@ box.append(utils.facet([(0, boxWidth, 0), (-koeff*boxLength, 0, 0),
 
 O.bodies.append(box)
 
-#important for right point of view in kniveMovement.py
-O.bodies.append(utils.wall(-boxHeight, 2))
-
 v.eyePosition = Vector3(0,-boxWidth, 1.2*boxHeight)
 v.viewDir = Vector3(0, 1, -0.5*boxHeight/boxWidth)
 v.sceneRadius = 10*boxLength
@@ -106,18 +101,25 @@ factory = BoxFactory(maxParticles = numberOfSpheres, maxMass = -1,
         mask = 0b11, silent = True, stopIfFailed = False
     )
 
-def loop():
+#deletes sphere if it has fallen down
+def delete():
+    for body in O.bodies:
+        if body.dict().get('state').dict().get('refPos')[2] < 0:
+            O.bodies.erase(body.id)
+
+#saves data
+def save_data():
     if(O.running):
         return
-    O.save("fast_data.yade")
+    O.save('fast_data.yade')
     print('saved')
 
 
 O.engines=[
     ForceResetter(),
-    InsertionSortCollider([Bo1_Sphere_Aabb(), Bo1_Facet_Aabb(), Bo1_Wall_Aabb()], verletDist = diamVal[0]),
+    InsertionSortCollider([Bo1_Sphere_Aabb(), Bo1_Facet_Aabb()], verletDist = diamVal[0]),
     InteractionLoop(
-        [Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom(), Ig2_Wall_Sphere_ScGeom()],
+        [Ig2_Sphere_Sphere_ScGeom(), Ig2_Facet_Sphere_ScGeom()],
         [Ip2_FrictMat_FrictMat_FrictPhys()],
         [Law2_ScGeom_FrictPhys_CundallStrack()]
     ),
@@ -127,6 +129,8 @@ O.engines=[
                         nDo = numberOfSpheres),
     GlobalStiffnessTimeStepper(timeStepUpdateInterval = 100, timestepSafetyCoefficient = 0.8,
                                defaultDt = 5e-7, maxDt = 5e-4),
-    PyRunner(iterPeriod = 1, command = 'loop()')
+    PyRunner(iterPeriod = 1, command = 'save_data()'),
+    PyRunner(iterPeriod = 10000, command = 'delete()')
 ]
+
 O.run()
