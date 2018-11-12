@@ -36,30 +36,19 @@ O.load('fast_data.yade')
 knife = []
 
 #creating a knife according to its velocity vector
-if x<=0:
-    knife.append(O.bodies.append([utils.facet([
-                (boxLength*(1+k*math.cos(a))+boxWidth/2*math.sin(a), boxWidth/2*(1+math.cos(a))-k*boxLength*math.sin(a), boxHeight+gap),
-                (boxLength*(1+k*math.cos(a))-boxWidth/2*math.sin(a), boxWidth/2*(1-math.cos(a))-k*boxLength*math.sin(a), boxHeight+gap),
-                (boxLength*(1+k*math.cos(a))+boxWidth/2*math.sin(a), boxWidth/2*(1+math.cos(a))-k*boxLength*math.sin(a), 2*boxHeight+gap)
+j = x/abs(x)
+
+knife.append(O.bodies.append([utils.facet([
+            (boxLength*(1-j*k*math.cos(a))+boxWidth/2*math.sin(a), boxWidth/2*(1+math.cos(a))+j*k*boxLength*math.sin(a), boxHeight+gap),
+            (boxLength*(1-j*k*math.cos(a))-boxWidth/2*math.sin(a), boxWidth/2*(1-math.cos(a))+j*k*boxLength*math.sin(a), boxHeight+gap),
+            (boxLength*(1-j*k*math.cos(a))+boxWidth/2*math.sin(a), boxWidth/2*(1+math.cos(a))+j*k*boxLength*math.sin(a), 2*boxHeight+gap)
                                           ]),
                               utils.facet([
-                (boxLength*(1+k*math.cos(a))+boxWidth/2*math.sin(a), boxWidth/2*(1+math.cos(a))-k*boxLength*math.sin(a), 2*boxHeight+gap),
-                (boxLength*(1+k*math.cos(a))-boxWidth/2*math.sin(a), boxWidth/2*(1-math.cos(a))-k*boxLength*math.sin(a), boxHeight+gap),
-                (boxLength*(1+k*math.cos(a))-boxWidth/2*math.sin(a), boxWidth/2*(1-math.cos(a))-k*boxLength*math.sin(a), 2*boxHeight+gap)
-                                                                      ])
-                                          ]))
-else:
-    knife.append(O.bodies.append([utils.facet([
-                (boxLength*(1-k*math.cos(a))+boxWidth/2*math.sin(a), boxWidth/2*(1+math.cos(a))+k*boxLength*math.sin(a), boxHeight+gap),
-                (boxLength*(1-k*math.cos(a))-boxWidth/2*math.sin(a), boxWidth/2*(1-math.cos(a))+k*boxLength*math.sin(a), boxHeight+gap),
-                (boxLength*(1-k*math.cos(a))+boxWidth/2*math.sin(a), boxWidth/2*(1+math.cos(a))+k*boxLength*math.sin(a), 2*boxHeight+gap)
-                                          ]),
-                              utils.facet([
-                (boxLength*(1-k*math.cos(a))+boxWidth/2*math.sin(a), boxWidth/2*(1+math.cos(a))+k*boxLength*math.sin(a), 2*boxHeight+gap),
-                (boxLength*(1-k*math.cos(a))-boxWidth/2*math.sin(a), boxWidth/2*(1-math.cos(a))+k*boxLength*math.sin(a), boxHeight+gap),
-                (boxLength*(1-k*math.cos(a))-boxWidth/2*math.sin(a), boxWidth/2*(1-math.cos(a))+k*boxLength*math.sin(a), 2*boxHeight+gap)
-                                                                      ])
-                                          ]))
+            (boxLength*(1-j*k*math.cos(a))+boxWidth/2*math.sin(a), boxWidth/2*(1+math.cos(a))+j*k*boxLength*math.sin(a), 2*boxHeight+gap),
+            (boxLength*(1-j*k*math.cos(a))-boxWidth/2*math.sin(a), boxWidth/2*(1-math.cos(a))+j*k*boxLength*math.sin(a), boxHeight+gap),
+            (boxLength*(1-j*k*math.cos(a))-boxWidth/2*math.sin(a), boxWidth/2*(1-math.cos(a))+j*k*boxLength*math.sin(a), 2*boxHeight+gap)
+                                            ])
+                                ]))
 
 #adding z-component of vector velocity; we want knife to move in xy plain only
 vector.append(0)
