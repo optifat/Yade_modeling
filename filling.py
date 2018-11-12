@@ -125,8 +125,6 @@ O.engines=[
     ),
     NewtonIntegrator(gravity = (0, 0, -9.81), damping = 0.1),
     factory,
-    DomainLimiter(hi = (boxLength, boxWidth, 10*boxHeight), lo = (-5*boxLength, 0, 0),
-                        nDo = numberOfSpheres),
     GlobalStiffnessTimeStepper(timeStepUpdateInterval = 100, timestepSafetyCoefficient = 0.8,
                                defaultDt = 5e-7, maxDt = 5e-4),
     PyRunner(iterPeriod = 1, command = 'save_data()'),
