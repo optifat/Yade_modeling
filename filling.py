@@ -39,9 +39,15 @@ O.materials.append(FrictMat(young = sample.young,
 qt.Controller()
 v = qt.View()
 
-#creating a П-like box (with bottom and two opposed XoY walls)
+v.eyePosition = Vector3(0,-boxWidth, 1.2*boxHeight)
+v.viewDir = Vector3(0, 1, -0.5*boxHeight/boxWidth)
+v.sceneRadius = 10*boxLength
+v.screenSize = Vector2i(1280, 760)
+
+#creating a box (like a stairs step)
 #all positions considered according to starting point of view
 box = []
+
 #front wall
 box.append(utils.facet([(boxLength, 0, 0), (-koeff*boxLength, 0, boxHeight),
                              (-koeff*boxLength, 0, 0)],
@@ -62,7 +68,7 @@ box.append(utils.facet([(boxLength, boxWidth, 0), (-koeff*boxLength, boxWidth, b
 box.append(utils.facet([(0, boxWidth, boxHeight), (boxLength, 0, boxHeight),
                              (0, 0, boxHeight)],
                              dynamic = False))
-O.bodies.append(utils.facet([(0, boxWidth, boxHeight), (boxLength, 0, boxHeight),
+box.append(utils.facet([(0, boxWidth, boxHeight), (boxLength, 0, boxHeight),
                              (boxLength, boxWidth, boxHeight)],
                              dynamic = False))
 
@@ -84,12 +90,6 @@ box.append(utils.facet([(0, boxWidth, 0), (-koeff*boxLength, 0, 0),
 
 O.bodies.append(box)
 
-v.eyePosition = Vector3(0,-boxWidth, 1.2*boxHeight)
-v.viewDir = Vector3(0, 1, -0.5*boxHeight/boxWidth)
-v.sceneRadius = 10*boxLength
-v.screenSize = Vector2i(1280, 760)
-
-
 factory = BoxFactory(maxParticles = numberOfSpheres, maxMass = -1,
         center = ((-koeff+1)*boxLength/2, boxWidth/2, boxHeight+3*gap),
         extents = ((koeff+1)*boxLength/2, boxWidth/2, 3*gap),
@@ -104,7 +104,7 @@ factory = BoxFactory(maxParticles = numberOfSpheres, maxMass = -1,
 #deletes sphere if it has fallen down
 def delete():
     for body in O.bodies:
-        if body.dict().get('state').dict().get('refPos')[2] < 0:
+        if body.dict().get('state').pos[2] < -diamVal[-1]:
             O.bodies.erase(body.id)
 
 #saves data
@@ -113,7 +113,6 @@ def save_data():
         return
     O.save('fast_data.yade')
     print('saved')
-
 
 O.engines=[
     ForceResetter(),
@@ -125,10 +124,12 @@ O.engines=[
     ),
     NewtonIntegrator(gravity = (0, 0, -9.81), damping = 0.1),
     factory,
+    DomainLimiter(hi = (boxLength, boxWidth, 10*boxHeight), lo = (-5*boxLength, 0, 0),
+                        nDo = numberOfSpheres),
     GlobalStiffnessTimeStepper(timeStepUpdateInterval = 100, timestepSafetyCoefficient = 0.8,
                                defaultDt = 5e-7, maxDt = 5e-4),
     PyRunner(iterPeriod = 1, command = 'save_data()'),
-    PyRunner(iterPeriod = 10000, command = 'delete()')
+    PyRunner(iterPeriod = 10, command = 'delete()')
 ]
 
 O.run()
