@@ -95,16 +95,19 @@ factory = BoxFactory(maxParticles = numberOfSpheres, maxMass = -1,
         extents = ((koeff+1)*boxLength/2, boxWidth/2, 3*gap),
         vMin = 0, vMax = 0,
 		PSDsizes = diamVal, PSDcum = massCum,
-        PSDcalculateMass = False, exactDiam = True,
+        PSDcalculateMass = False,
 		vAngle = 0, massFlowRate = 2e12,
         normal = (0.0,0.0,-1.0), label = 'factory',
         mask = 0b11, silent = True, stopIfFailed = False
     )
 
-#deletes sphere if it has fallen down
-def delete():
+#defines spheres color according to their size; also deletes spheres which has fallen down
+def transformation():
     for body in O.bodies:
-        if body.dict().get('state').pos[2] < -diamVal[-1]:
+        if body.shape.dict().get('radius') and body.shape.color == Vector3(1, 1, 1):
+            r = body.shape.dict().get('radius')
+            body.shape.color = Vector3(math.log(2*r/diamVal[-1]*math.exp(1)), abs(math.cos(math.pi*r+1)**3), math.sin(r)**2)
+        if body.state.pos[2] < -diamVal[-1]:
             O.bodies.erase(body.id)
 
 #saves data
@@ -126,7 +129,7 @@ O.engines=[
     factory,
     GlobalStiffnessTimeStepper(timeStepUpdateInterval = 100, defaultDt = 5e-7, maxDt = 5e-4),
     PyRunner(iterPeriod = 1, command = 'save_data()'),
-    PyRunner(iterPeriod = 1000, command = 'delete()')
+    PyRunner(iterPeriod = 1000, command = 'transformation()')
 ]
 
 O.run()
