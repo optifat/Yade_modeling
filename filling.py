@@ -44,7 +44,7 @@ v.viewDir = Vector3(0, 1, -0.5*boxHeight/boxWidth)
 v.sceneRadius = 10*boxLength
 v.screenSize = Vector2i(1280, 760)
 
-#creating a box (like a stairs step)
+#creating box (like a stairs step)
 #all positions considered according to starting point of view
 box = []
 
@@ -101,12 +101,14 @@ factory = BoxFactory(maxParticles = numberOfSpheres, maxMass = -1,
         mask = 0b11, silent = True, stopIfFailed = False
     )
 
-#defines spheres color according to their size; also deletes spheres which has fallen down
+#defines sphere color according to its size; also deletes spheres which have fallen down
 def transformation():
     for body in O.bodies:
         if body.shape.dict().get('radius') and body.shape.color == Vector3(1, 1, 1):
             r = body.shape.dict().get('radius')
-            body.shape.color = Vector3(math.log(2*r/diamVal[-1]*math.exp(1)), abs(math.cos(math.pi*r+1)**3), math.sin(r)**2)
+            body.shape.color = Vector3(math.log(2*r/diamVal[-1]*math.exp(1)),
+                                       abs(math.cos(math.pi*r+1)**3),
+                                       math.sin(r)**2)
         if body.state.pos[2] < -diamVal[-1]:
             O.bodies.erase(body.id)
 
